@@ -86,9 +86,9 @@ Node* addtwolinkedlist(Node *head1,Node *tail1, Node *head2, Node *tail2)
     if(head2 == NULL)
     return head1;
     head1= reverse(head1, tail1);
-    display(head1);
+    // display(head1);
     head2= reverse(head2, tail2);
-    display(head2);
+    // display(head2);
     Node *temp1= head1; Node *temp2= head2;
     int carry=0;
     while((temp1!=NULL || temp2!=NULL) || carry > 0)
@@ -110,6 +110,46 @@ Node* addtwolinkedlist(Node *head1,Node *tail1, Node *head2, Node *tail2)
     dummyhead= reverse(dummyhead, dummytail);
     return dummyhead;
 }
+
+Node* findIntersection(Node* head1, Node* head2)
+{
+    // Your Code Here
+    unordered_map<int, int> mp;
+    Node *temp= head1;
+    while(temp!=NULL)
+    {
+        mp[temp->data]++;
+        temp= temp->next;
+    }
+    Node *head = NULL;
+    Node *tail= head;
+    temp= head2;
+    while(temp!=NULL)
+    {
+        if(mp.find(temp->data)!= mp.end())
+        {
+            Node* newnode= new Node(temp->data);
+            if(head== NULL)
+            head= tail = newnode;
+            else
+            {
+                tail->next= newnode;
+                tail= newnode;
+            }
+            if(mp[temp->data]==1)
+            mp.erase(temp->data);
+            else
+            mp[temp->data]--;
+            temp= temp->next;
+        }
+        else{
+            temp= temp->next;
+        }
+    }
+    return head;
+    
+}
+
 int main()
 {
     Node *head1=NULL, *head2=NULL;
@@ -120,8 +160,29 @@ int main()
     cout<<"Create the second linked list:"<<endl;
     head2= linkedlist(head2, tail2);
     Node *head=NULL;
-    Node *tail= head;
-    cout<<"The addition of two linked list:"<<endl;
-    head= addtwolinkedlist(head1,tail1,head2, tail2);
-    display(head);
+    Node *tail= head; 
+    while(true)
+    {
+     int choice;
+    cout<<"1.The addition of two linked list:"<<endl;
+    cout<<"2.Intersection of two linked list:"<<endl;
+    cout<<"0.to exit "<<endl;
+    cout<<"enter choice:"<<endl;
+    cin>>choice;
+    switch(choice)
+    {
+    case 1:
+        head= addtwolinkedlist(head1 ,tail1, head2, tail2);
+        display(head);
+        break;
+    case 2:
+        head= findIntersection(head1,head2);
+        display(head);
+        break;
+    case 0:
+        exit(0);
+    default: 
+        cout<<"Please choose the right option."<<endl;
+    }
+    }
 }
