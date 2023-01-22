@@ -5,7 +5,6 @@ class Node
     public:
     int data;
     Node *next;
-
     //constructor to initialize the node
     Node(int data)
     {
