@@ -131,6 +131,34 @@ int height(Node *root)
     int h= max(left, right)+1;
     return h;
 }
+
+Node* mirror(Node *root, Node *newroot)
+{
+    if(root == NULL)
+    return NULL;
+
+    newroot= new Node(root->data);
+    newroot->right= mirror(root->left, newroot->right);
+    newroot->left= mirror(root->right, newroot->left);
+    return newroot;
+}
+//returning the diameter and height of the node at the same time to reduce tthe time complexity
+pair<int, int> diameter(Node *root)
+{
+    if(root== NULL)
+    {
+        pair<int,int> p(0,0);
+        return p;
+    }
+    pair<int, int> left= diameter(root->left);
+    pair<int, int> right= diameter(root->right);
+    int op1= left.first;
+    int op2= right.first;
+    int op3= left.second+ right.second+1;
+    int maxi= max(max(op1, op2),op3);
+    int h= max(left.second, right.second)+1;
+    return {maxi, h};
+}
 int main()
 {
     Node *root= NULL;
@@ -144,6 +172,8 @@ int main()
         cout<<"5. To print the level order traversal: "<<endl;
         cout<<"6. To print the reverse level order traversal: "<<endl;
         cout<<"7. To get the height of tree: "<<endl;
+        cout<<"8. To get the mirror image of the binary tree:" <<endl;
+        cout<<"9. To find the diameter of the binary tree:"<<endl;
         cout<<"0 to exit"<<endl;
         cout<<"enter the choice: ";
         cin>>choice;
@@ -182,6 +212,21 @@ int main()
             cout<<"height of tree is : "<<h<<endl;
             break;
         }
+        case 8:
+            {
+                Node *mirror_root= NULL;
+                mirror_root= mirror(root, mirror_root);
+                cout<<"\n Inorder traversal of real tree:"<<endl;
+                inorder(root);
+                cout<<"\n Inorder traversal of mirror tree:"<<endl;
+                inorder(mirror_root);
+                break;
+            }
+        case 9:
+            {
+                cout<<"the diameter of the binary tree is: "<<diameter(root).first<<endl;
+                break;
+            }
         case 0:
             exit(0);
         default:
