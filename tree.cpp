@@ -100,7 +100,7 @@ vector<int> reverseLevelOrder(Node *root)
     vector<int>  result;
     if(root == NULL)
     return result;
-    map<int, vector<int>, greater<int> > mp;
+    map<int, vector<int>, greater<int> > mp;   //this will store the value of higher key first
     queue<pair<int, Node*>> q;
     q.push(make_pair(0,root));
     while(!q.empty())
@@ -159,6 +159,267 @@ pair<int, int> diameter(Node *root)
     int h= max(left.second, right.second)+1;
     return {maxi, h};
 }
+
+//to print the left view of the tree
+vector<int> leftviewoftree(Node *root)
+{
+    vector<int> result;
+    if(root== NULL)
+    return result;
+    queue<pair<int, Node*> > q;
+    map<int, int> mp;
+    q.push(make_pair(0,root));
+    while(!q.empty())
+    {
+        pair<int, Node*> frontnode= q.front();
+        q.pop();
+        int level= frontnode.first;
+        Node *node= frontnode.second;
+        if(mp.find(level)==mp.end())
+        {
+            mp[level]= node->data;
+        }
+        if(node->left)
+        q.push(make_pair(level+1, node->left));
+        if(node->right)
+        q.push(make_pair(level+1, node->right));
+    }
+    for(auto i:mp)
+    {
+        result.push_back(i.second);
+    }
+    return result;
+}
+vector<int> rightviewoftree(Node *root)
+{
+    vector<int> result;
+    if(root== NULL)
+    return result;
+    queue<pair<int, Node*>> q;
+    map<int, int> mp;
+    q.push(make_pair(0,root));
+    while(!q.empty())
+    {
+        pair<int , Node*> frontnode= q.front();
+        q.pop();
+        int level= frontnode.first;
+        Node *node= frontnode.second;
+        mp[level]= node->data;
+        if(node->left)
+        q.push(make_pair(level+1, node->left));
+        if(node->right)
+        q.push(make_pair(level+1, node->right));
+    }
+    for(auto i: mp)
+    result.push_back(i.second);
+
+    return result;
+}
+
+vector<int> topviewoftree(Node *root)
+{
+    vector<int> result;
+    if(root== NULL)
+    return result;
+    queue<pair<int, Node*>> q;   //for queue<pair<horizontal_distance, node>> q;
+    map<int,int> mp;    //to store the result at each hd
+    q.push(make_pair(0,root));
+    while(!q.empty())
+    {
+        pair<int, Node*> frontnode= q.front();
+        q.pop();
+        int hd= frontnode.first;
+        Node *node= frontnode.second;
+        if(mp.find(hd)==mp.end())
+        {
+            mp[hd]= node->data;
+        }
+        if(node->left)
+        q.push(make_pair(hd-1, node->left));
+        if(node->right)
+        q.push(make_pair(hd+1, node->right));
+    }
+    for(auto i: mp)
+    result.push_back(i.second);
+
+    return result;
+}
+
+vector<int> bottomviewoftree(Node *root)
+{
+    vector<int> result;
+    if(root== NULL)
+    return result;
+    queue<pair<int, Node*>> q;   //for queue<pair<horizontal_distance, node>> q;
+    map<int,int> mp;    //to store the result at each hd
+    q.push(make_pair(0,root));
+    while(!q.empty())
+    {
+        pair<int, Node*> frontnode= q.front();
+        q.pop();
+        int hd= frontnode.first;
+        Node *node= frontnode.second;
+        mp[hd]= node->data;
+        if(node->left)
+        q.push(make_pair(hd-1, node->left));
+        if(node->right)
+        q.push(make_pair(hd+1, node->right));
+    }
+    for(auto i: mp)
+    result.push_back(i.second);
+
+    return result;
+}
+
+vector<int> zigzagtraversal(Node *root)
+{
+    vector<int> result;
+    if(root== NULL)
+    return result;
+    stack<Node*> currentlevel;
+    stack<Node*> nextlevel;
+    bool lefttoright= true;
+    currentlevel.push(root);
+    while(!currentlevel.empty())
+    {
+        Node *frontnode= currentlevel.top();
+        result.push_back(frontnode->data);
+        currentlevel.pop();
+        if(lefttoright)
+        {
+            if(frontnode->left)
+            nextlevel.push(frontnode->left);
+            if(frontnode->right)
+            nextlevel.push(frontnode->right);
+        }
+        else{
+            if(frontnode->right)
+            nextlevel.push(frontnode->right);
+            if(frontnode->left)
+            nextlevel.push(frontnode->left);
+        }
+        if(currentlevel.empty())
+        {
+            swap(currentlevel, nextlevel);
+            lefttoright= !lefttoright;
+        }
+    }
+    
+return result;
+}
+
+vector<vector<int>> zigzagtraversalwithvector(Node *root)
+{
+    vector<vector<int>> result;
+    queue<Node*> q;
+    q.push(root);
+    bool flag= false;    //flag is represent if flag is true means we have to put the things in left to right if false right to left
+    while(!q.empty())
+    {
+        int size= q.size();
+        vector<int> answer;
+        while(size--)
+        {
+            Node *node= q.front();
+            q.pop();
+            answer.push_back(node->data);
+            if(node->left)
+            q.push(node->left);
+            if(node->right)
+            q.push(node->right);
+        }
+        flag= !flag;
+        if(flag== false)
+        reverse(answer.begin(), answer.end());
+        result.push_back(answer);
+    }
+    return result;
+} 
+pair<bool,int> isbalanced(Node *root)
+{
+    if(root== NULL)
+    {
+        pair<bool, int> p(true, 0);
+        return p;
+    }
+    pair<bool, int> lefttree = isbalanced(root->left);
+    pair<bool, int> righttree= isbalanced(root->right);
+    bool balancecondition = abs(lefttree.second - righttree.second) <=1;
+    pair<bool, int> ans;
+    ans.first= false;
+    ans.second= max(lefttree.second, righttree.second)+1;
+    if(lefttree.first && righttree.first && balancecondition)
+    {
+        ans.first= true;
+    }
+    return ans;
+   
+}
+
+void diagonaltraversal(Node *root, vector<vector<int>> &result)
+{
+    queue<Node*> q;
+    q.push(root);
+    while(!q.empty())
+    {
+        int size= q.size();
+        vector<int> answer;
+        while(size--)
+        {
+            Node *temp= q.front();
+            q.pop();    
+            while(temp)
+            {
+                answer.push_back(temp->data);
+                if(temp->left)
+                {
+                    q.push(temp->left);
+                }
+                temp= temp->right;
+            }
+        }
+        result.push_back(answer);
+    }
+}
+
+Node* treetolist(Node *root)
+{
+    Node *current= root;
+   
+    while(current!=NULL)
+    {
+    Node *temp;
+    if(current->left)
+    temp= current->left;
+    else
+    current= current->right;
+
+    //now finding the inorder predecessor of the node
+    while(temp->right!=NULL && temp!=current)
+    {
+        temp = temp->right;
+    }
+    if(temp->right==NULL)
+    {
+        temp->right= current->right;
+        current->right= current->left;
+        current->left= NULL;
+        current= current->right;
+        
+    }
+    }
+    return root;
+}
+
+void displaylist(Node *head)
+{
+    Node *temp= head;
+    while(temp!=NULL)
+    {
+        cout<<temp->data<<" ";
+        temp= temp->right;
+    }
+}
 int main()
 {
     Node *root= NULL;
@@ -174,6 +435,14 @@ int main()
         cout<<"7. To get the height of tree: "<<endl;
         cout<<"8. To get the mirror image of the binary tree:" <<endl;
         cout<<"9. To find the diameter of the binary tree:"<<endl;
+        cout<<"10. To find the leftview of the binary tree:"<<endl;
+        cout<<"11. To find the rightview of the binary tree:"<<endl;
+        cout<<"12. To find the topview of the binary tree:"<<endl;
+        cout<<"13. To find the bottomview of binary tree: "<<endl;
+        cout<<"14. to find the zigzag traversal of the binary tree: "<<endl;
+        cout<<"15. To check whether the binary tree is balanced tree or not: "<<endl;
+        cout<<"16. To get the diagonal traversal of binary tree: "<<endl;
+        cout<<"17. to convert the binary tree to singly linked list: "<<endl;
         cout<<"0 to exit"<<endl;
         cout<<"enter the choice: ";
         cin>>choice;
@@ -227,6 +496,84 @@ int main()
                 cout<<"the diameter of the binary tree is: "<<diameter(root).first<<endl;
                 break;
             }
+        case 10:
+        {
+                vector<int> output;
+                output = leftviewoftree(root);
+                cout<<"Left view of tree:"<<endl;
+                for(auto i: output)
+                cout<<i<<" "; 
+                break;
+        }
+        case 11:
+        {
+                vector<int> output;
+                output = rightviewoftree(root);
+                cout<<"Left view of tree:"<<endl;
+                for(auto i: output)
+                cout<<i<<" "; 
+                break;
+        }
+        case 12:
+        {
+            vector<int> output;
+            output= topviewoftree(root);
+            for(auto i: output)
+            cout<<i<<" ";
+            break;
+        }
+        case 13:
+        {
+            vector<int> output;
+            output= bottomviewoftree(root);
+            for(auto i: output)
+            cout<<i<<" ";
+            break;
+        }
+        case 14:
+        {
+            vector<int> output;
+            // output= zigzagtraversal(root);
+            vector<vector<int>> result;
+            result= zigzagtraversalwithvector(root);
+            for(auto i: result)
+            {
+                for(auto j: i){
+                cout<<j<<" ";}
+                cout<<endl;
+
+            }
+            // for(auto i: output)
+            // cout<<i<<" ";
+            // break;
+        }
+        case 15:
+        {
+            if(isbalanced(root).first)
+            cout<<"Binary tree is a balanced tree"<<endl;
+            else cout<<"Tree is not balanced"<<endl;
+            break;
+        }
+        case 16:
+        {
+            vector<vector<int>> result;
+            diagonaltraversal(root, result);
+            for(auto i: result)
+            {
+                for(auto j: i)
+                {
+                    cout<<j<<" ";
+                }
+                cout<<endl;
+            }
+            break;
+        }
+        case 17:
+        {
+            Node *head= treetolist(root);
+            displaylist(head);
+            break;
+        }
         case 0:
             exit(0);
         default:
@@ -237,3 +584,4 @@ int main()
 
 
 ///tree :   1 2 4 -1 5 -1 -1 3 -1 -1 7 8 -1 -1 9 -1 -1 
+//tree :   6 10 21 -1 -1 22 -1 12 -1 -1 19 6 -1 -1 9 -1 -1
