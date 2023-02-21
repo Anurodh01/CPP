@@ -240,6 +240,77 @@ int middlenode(Node *head)
     }
     return slow->data;
 }
+Node * Middle(Node *head)
+    {
+        Node *slow,*fast;
+        slow=head;
+        fast=head->next;
+        while( fast!=NULL && fast->next!=NULL)
+        {
+            slow=slow->next;
+            fast=fast->next->next;
+        }
+        return slow;
+    }
+    
+Node * reverse(Node *mid)
+{
+        Node *curr,*prev,*nextnode;
+        curr=mid;
+        prev=NULL;
+        while(curr!=NULL)
+        {
+            nextnode=curr->next;
+            curr->next=prev;
+            prev=curr;
+            curr=nextnode;
+        }
+        return prev;
+}
+bool isPalindrome(Node *head)
+{
+        //Your code here
+        if(head==NULL || head->next==NULL)
+        {
+            return true;
+        }
+        Node *temp;
+        Node *mid=Middle(head);
+        temp=mid->next;
+        mid->next=reverse(temp);
+        Node *head1=head;
+        Node *head2=mid->next;
+        
+        while(head2!=NULL)
+        {
+            if(head2->data!=head1->data)
+            {
+                return false;
+            }
+            head2=head2->next;
+            head1=head1->next;
+        }
+        return true;
+}
+Node* deletefromcircularelinkedlist(Node *head, int key)
+{
+    Node *temp=head;
+    Node *t= temp;
+    while(temp->next!=head)
+    {
+        if(temp->data== key)
+        {
+            t->next= temp->next;
+            free(temp);
+            break;
+        }
+        else{
+            t= temp;
+            temp= temp->next;
+        }    
+    }
+    return head;
+}
 int main()
 {
     Node *head= NULL;
@@ -260,6 +331,8 @@ int main()
     cout<<"10. to move the last node to first pos: "<<endl;
     cout<<"11. to add 1 in  linked list: "<<endl;
     cout<<"12. to find the middle element of linked list: "<<endl;
+    cout<<"13. to find the linked list is palindrome or not: "<<endl;
+    cout<<"14. to delete from the circular linked list: "<<endl;
     cout<<"0. to exit"<<endl;
     cout<<"\n enter your choice: ";
     cin>>choice;
@@ -324,6 +397,25 @@ int main()
             cout<<"Middle element of the linked list: "<<middle<<endl;
             break;
         }
+    case 13:{
+        bool check = isPalindrome(head);
+        if(check)
+        cout<<"Linked list is palindrome."<<endl;
+        else cout<<"Linked list is not a palindrome."<<endl;
+    }
+    case 14:
+    {
+        int key=4;
+        Node *temp= head;
+        while(temp->next!=head)
+        {
+            cout<<temp->data<<" ";
+            temp= temp->next;
+        }
+        head= deletefromcircularelinkedlist(head, key);
+        break;
+
+    }
     default: 
         cout<<"Please enter a valid option!!"<<endl;
         break;
