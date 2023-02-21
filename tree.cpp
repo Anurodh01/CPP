@@ -13,7 +13,18 @@ class Node
         this->right= NULL;
     }
 };
-
+class CharNode{
+    public:
+    char data;
+    CharNode *left,*right;
+    public:
+    CharNode(char data)
+    {
+        this->data= data;
+        this->left= NULL;
+        this->right= NULL;
+    }
+};
 Node* createbinarytree(Node *root)
 {
     int data;
@@ -420,6 +431,110 @@ void displaylist(Node *head)
         temp= temp->right;
     }
 }
+void lefttraversal(Node *root , vector<int> &result)
+{
+    if(root->left== NULL && root->right== NULL)
+    return;
+    result.push_back(root->data);
+    if(root->left)
+    lefttraversal(root->left, result);
+    else if(root->right)
+    lefttraversal(root->right, result);
+}
+
+void leaftraversal(Node *root, vector<int> &result)
+{
+    if(root->left == NULL && root->right == NULL)
+    {
+        result.push_back(root->data);
+        return;
+    }
+    if(root->left)
+    leaftraversal(root->left,result);
+    if(root->right)
+    leaftraversal(root->right, result);
+}
+void righttraversal(Node *root, vector<int> &result)
+{
+    if(root->left == NULL && root->right == NULL)
+    {
+        return ;
+    }
+    if(root->right)
+    righttraversal(root->right, result);
+    else if(root->left)
+    righttraversal(root->left, result);
+    result.push_back(root->data);
+
+}
+vector<int> boundarytraversal(Node *root)
+{
+    vector<int> result;
+    if(root== NULL)
+    return result;
+    result.push_back(root->data);
+
+    //for the left traversal
+    lefttraversal(root->left, result);
+
+    //for the leaf traversal of the left of the root
+    leaftraversal(root->left, result);
+
+    //for the leaf traversal of the right of the root
+    leaftraversal(root->right, result);
+
+    //now the right traversal of the tree
+    righttraversal(root->right, result);
+
+    return result;
+
+}
+
+int SumTree(Node *root)
+{
+    if(root==NULL)
+    return 0;
+
+    int old_data= root->data;
+
+    root->data= SumTree(root->left)+SumTree(root->right);
+
+    return root->data+old_data;
+
+}
+int findelement(int element, vector<char> &inorder)
+{
+    for(int i=0;i<inorder.size();i++)
+    {
+        if(element == inorder[i])
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+CharNode* treefrominorderandpreorder(CharNode *root, int &preorderindex, int startindex ,int endindex, vector<char> &inorder, vector<char> &preorder)
+{
+    if(preorderindex > inorder.size()-1 || startindex > endindex)
+    return NULL;
+
+    char ele= preorder[preorderindex];
+    root= new CharNode(ele);
+    int index= findelement(ele, inorder);
+    preorderindex++;
+    root->left= treefrominorderandpreorder(root->left, preorderindex, startindex, index-1, inorder, preorder);
+    root->right= treefrominorderandpreorder(root->right, preorderindex, index+1, endindex, inorder, preorder);
+    return root;
+}
+//char traversal
+void Charinorder(CharNode *root)
+{
+    if(root== NULL)
+    return;
+    Charinorder(root->left);
+    cout<<root->data<<" ";
+    Charinorder(root->right);
+}
 int main()
 {
     Node *root= NULL;
@@ -443,6 +558,9 @@ int main()
         cout<<"15. To check whether the binary tree is balanced tree or not: "<<endl;
         cout<<"16. To get the diagonal traversal of binary tree: "<<endl;
         cout<<"17. to convert the binary tree to singly linked list: "<<endl;
+        cout<<"18. To get the boundary traversal of the binary tree: "<<endl;
+        cout<<"19. To convert the tree into a Sum tree: "<<endl;
+        cout<<"20. To get the binary tree from inorder and preorder traversal of tree: "<<endl;
         cout<<"0 to exit"<<endl;
         cout<<"enter the choice: ";
         cin>>choice;
@@ -574,6 +692,30 @@ int main()
             displaylist(head);
             break;
         }
+        case 18:
+            {
+            vector<int> result;
+            result= boundarytraversal(root);
+            for(auto i: result)
+            cout<<i<<" ";
+            break;
+            }
+        case 19:
+            SumTree(root);
+            break;
+        case 20:
+        {
+            CharNode *root1=NULL;
+            vector<char> inorder={'D','B','E','A','F','C'};
+            vector<char> preorder={'A','B','D','E','C','F'};
+            int preorderindex= 0;
+            int startindex= 0;
+            int endindex=preorder.size()-1;
+            // cout<<startindex<<" "<<endindex;
+            root1 = treefrominorderandpreorder(root1,preorderindex,startindex, endindex, inorder, preorder);
+            Charinorder(root1);
+            break;
+        }
         case 0:
             exit(0);
         default:
@@ -585,3 +727,4 @@ int main()
 
 ///tree :   1 2 4 -1 5 -1 -1 3 -1 -1 7 8 -1 -1 9 -1 -1 
 //tree :   6 10 21 -1 -1 22 -1 12 -1 -1 19 6 -1 -1 9 -1 -1
+//tree:  9 10 -1 23 21 -1 -1 23 11 -1 -1 -1 23 -1 98 97 -1 93 -1 -1 -1
